@@ -1,0 +1,32 @@
+$smallBtn: 35px;
+$grayBg: #e3e3e3;
+$grayText: #c2c2c2;
+
+
+@mixin shadedContainer {
+    border-radius: 10px;
+    border: 2px solid #000;
+    -webkit-box-shadow: -5px 5px 0px 0px #000000; 
+    box-shadow: -5px 5px 0px 0px #000000;
+}
+
+@mixin bordered {
+    background: none;
+    border-radius: 10px;
+    border: 2px solid #000;
+    padding: 10px 20px;
+    font-size: 20px;
+}
+
+@mixin grayBackground {
+    background-color: #e3e3e3;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+@mixin flexCenter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+

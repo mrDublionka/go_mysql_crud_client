@@ -1,0 +1,86 @@
+@import "variables";
+
+.main {
+    background-color: #eaeaea;
+    height: 100px;
+    min-height: 1200px;
+
+    .counter {
+        border: 1px solid #000;
+        width: fit-content;
+        height: 250px;
+        margin: 100px auto;
+        border-radius: 15px;
+       background-color: #d8d8d8;
+        -webkit-box-shadow: 5px 5px 15px -3px rgba(0,0,0,0.4), -5px -5px 15px -3px rgba(255, 255, 255); 
+        box-shadow: 5px 5px 15px -3px rgba(0,0,0,0.4), -5px -5px 15px -3px rgb(255, 255, 255);
+        padding: 20px;
+
+        &__inside {
+            width: fit-content;
+            height: fit-content;
+            background-color: #1d1d1d;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0 100px;
+            overflow: hidden;
+        }
+
+        &__divider {
+            width: 4px;
+            height: 70px;
+            background: #434343;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+
+        &__number {
+            color: #eaeaea;
+            font-size: 200px;
+            font-weight: 600;
+            height: 280.8px;
+        }
+
+        &__number_slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+        
+
+            &.rolling {
+                animation-name: anim;
+                animation-duration: 0.95s;
+                animation-iteration-count: infinite;
+                animation-timing-function: linear;
+            }
+
+            @keyframes anim {
+                from {
+                    transform: translateY(0);
+                }
+                to {
+                    transform: translateY(-77%);
+                }
+            }
+
+            &.sliding {
+                animation-name: animSlide;
+                animation-timing-function: linear;
+                animation-duration: 0.95s;
+                animation-iteration-count: infinite;
+            }
+
+            @keyframes animSlide {
+                from {
+                    transform: translateY(0);
+                }
+      
+                to {
+                    transform: translateY(-250px);
+                }
+            }
+        }
+    }
+}
