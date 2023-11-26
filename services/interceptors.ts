@@ -12,6 +12,8 @@ export default (endpoint:string, options?:any, req?:NextApiRequest, res?:NextApi
             'Origin': 'myBlog.md',
             'Referer': 'myBlog.md',
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Access-Control-Allow-Origin': '*',
         }
     };
 
@@ -19,19 +21,19 @@ export default (endpoint:string, options?:any, req?:NextApiRequest, res?:NextApi
         defaultOptions.body = options.body
     }
 
-    if (endpoint.match('/next-php-blog/server/controllers/')) {
-        defaultOptions.headers = {
-            'Accept': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'application/json',
-        }
-    }
+    // if (endpoint.match('/next-php-blog/server/controllers/')) {
+    //     defaultOptions.headers = {
+    //         'Accept': 'application/json',
+    //         'Access-Control-Allow-Origin': '*',
+    //         'Content-Type': 'application/json',
+    //     }
+    // }
 
     if (typeof token === "string") {
         defaultOptions.headers = {...defaultOptions.headers, ...{'Authorization': `Bearer ${token}`}};
     }
 
 
-    return fetch('http://localhost' + endpoint, defaultOptions)
+    return fetch('http://localhost:9010' + endpoint, defaultOptions)
 }
 

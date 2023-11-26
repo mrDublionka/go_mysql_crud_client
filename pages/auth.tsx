@@ -202,6 +202,7 @@ const Auth = (props: Props) => {
     <div className={styles.page}>
       <div className={styles.container}>
         <div className={styles.actionHandle}>
+
           <button
             onClick={() => {
               changeActionHandle("login");
