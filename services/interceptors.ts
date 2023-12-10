@@ -21,14 +21,6 @@ export default (endpoint:string, options?:any, req?:NextApiRequest, res?:NextApi
         defaultOptions.body = options.body
     }
 
-    // if (endpoint.match('/next-php-blog/server/controllers/')) {
-    //     defaultOptions.headers = {
-    //         'Accept': 'application/json',
-    //         'Access-Control-Allow-Origin': '*',
-    //         'Content-Type': 'application/json',
-    //     }
-    // }
-
     if (typeof token === "string") {
         defaultOptions.headers = {...defaultOptions.headers, ...{'Authorization': `Bearer ${token}`}};
     }

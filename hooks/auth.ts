@@ -49,15 +49,15 @@ function useAuth(){
 
         const data = await logInService(email, pwd);
 
-        console.log(data)
-
         if(data.error) {
             dispatch(userIsUpdating(false));
-            console.error(data.message);
         }
 
         if(!data.error && data.response) {
-            setAuthToken(data.response.token)
+            setAuthToken(data.response)
+
+            const user = await updateProfile()
+
             dispatch(updateUserData(data.response))
             dispatch(userIsUpdating(false))
             setTimeout(() => {

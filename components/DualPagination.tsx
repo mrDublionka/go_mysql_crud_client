@@ -49,11 +49,11 @@ const DualPagination: React.FC<Props> = ({
     const body = await request.response;
     // console.log(body);
 
-    if (Array.isArray(body.posts)) {
+    if (Array.isArray(body?.posts)) {
       setRows(body.posts);
     }
 
-    if (body.post_count > 0) {
+    if (body?.post_count > 0) {
       setResultCount(body.post_count);
     }
   };

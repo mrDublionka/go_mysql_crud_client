@@ -8,45 +8,27 @@ const toogleFetch = (url:string, params:any) => {
     return fetchDatas(url, params)
 }
 
+let endpoint = process.env.NEXT_PUBLIC_API
 
-export const addPost = async (title: string, content: string, image: string, topic: string, userID: number, date: number) => {
+export const addPostService = async (data:any) => {
     
     let response:ServiceResponse = {
         error: false,
     }
 
     const post = {
-        title:title,
-        content:content,
-        image:image,
-        topic:topic,
-        userID: userID,
-        date: date
+
     }
 
-
     try {
-        const req = await toogleFetch('/next-php-blog/server/controllers/addPost.php', {
+        const req = await toogleFetch('/posts', {
             method: 'POST',
-            body: JSON.stringify(post),
-
+            body: data,
         })
 
         const body = await req.json();
 
-        if(!body.post.user){
-            response.error = true;
-            response.message = 'Unknown error'
-            return response
-
-        } else if (body.post.user) {
-
-            response.error = false;
-            response.message = body.message
-            response.response = body.post
-            
-        }
-
+        console.log(body)
         // response.response = body
 
         return response
@@ -144,9 +126,13 @@ export const fetchPosts = async (date: number, topic: string, limit: number, off
             topic
         }
 
-        const req = await toogleFetch(`/next-php-blog/server/controllers/getPosts.php?`+qs.stringify(query),
+        // const req = await fetch(endpoint+`/posts?`+qs.stringify(query),
+        const req = await fetch(endpoint+`/posts`,
             {
                 method: "GET",
+                headers: {
+                    "Accept":"application/json"
+                }
             }
         );
 

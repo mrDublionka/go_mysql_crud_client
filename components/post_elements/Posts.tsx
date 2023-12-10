@@ -5,14 +5,14 @@ import React, {
   FormEvent,
   useRef,
 } from "react";
-import styles from "../styles/posts.module.scss";
-import Card from "./Card";
+import styles from "../../styles/posts.module.scss";
+import Card from "../Card";
 import { AiOutlinePlus } from "react-icons/ai";
 import useAuth from "@/hooks/auth";
 import { addPost } from "@/services/posts";
 import * as storageConfig from "@/utils/firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import DualPagination from "./DualPagination";
+import DualPagination from "../DualPagination";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import NativeSelect from "@mui/material/NativeSelect";
@@ -22,6 +22,9 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { fetchPosts } from "@/services/posts";
+import strings from "@/utils/strings";
+import AddPostForm from "@/components/post_elements/add_post_form";
+import {useDispatch, useSelector} from "react-redux";
 
 interface paramsProps {
   date: number;
@@ -36,14 +39,17 @@ const Posts = (props: Props) => {
   const auth = useAuth();
   const allTopics = topics.topics;
   const selectRef = useRef<HTMLSelectElement>(null);
+  const dispatch = useDispatch()
+
+  const show = useSelector((state:any) => state.common.show_add_post_form)
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [posts, setPosts] = useState<Array<any>>([]);
   const [pages, setPages] = useState<Array<number>>([]);
-  const [postFormActive, setPostFormActive] = useState<boolean>(false);
   const [postImage, setImage] = useState<File | null>(null);
   const [imagePath, setImagePath] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [postFormActive, setPostFormActive] = useState<boolean>(false);
   const [postInputs, setPostInputs] = useState<any>({
     title: "",
     content: "",
@@ -124,8 +130,8 @@ const Posts = (props: Props) => {
 
     const body = await request.response;
 
-    if (Array.isArray(body.posts)) {
-      setPosts(body.posts);
+    if (Array.isArray(body)) {
+      setPosts(body);
     }
   };
 
@@ -174,6 +180,10 @@ const Posts = (props: Props) => {
     }
   }, [imagePath]);
 
+  useEffect(() => {
+    fetchData(defaultProps)
+  }, []);
+
   const topicsForCreation = (): Array<any> => {
     let arr: Array<any> = allTopics.filter((i) => i.value !== "All");
 
@@ -191,102 +201,14 @@ const Posts = (props: Props) => {
         {({ filterHandle }) => {
           return (
             <div className={styles.posts}>
-              <h1 className={styles.posts__heading}>See what's new</h1>
+              <h1 className={styles.posts__heading}>
+                {strings['what_new']}
+              </h1>
 
               {/* ADD POSTS START ADD POSTS START ADD POSTS START ADD POSTS START  */}
 
               {auth.isLoggedIn() && (
-                <>
-                  <button
-                    onClick={() => {
-                      setPostFormActive(!postFormActive);
-                    }}
-                    className={styles.posts__addButton}
-                  >
-                    <AiOutlinePlus />
-                  </button>
-
-                  {postFormActive && (
-                    <div className={styles.posts__addContainer}>
-                      <form
-                        onSubmit={(e) => {
-                          getImageUrl(e);
-                        }}
-                        action="add post"
-                      >
-                        <label htmlFor="title">Title</label>
-                        <input
-                          onChange={(e) => {
-                            setInputs(e);
-                          }}
-                          type="text"
-                          name="title"
-                          value={postInputs.title}
-                        />
-
-                        <label htmlFor="title">Topic</label>
-
-                        <select
-                          onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-                            setInputs(e);
-                          }}
-                          ref={selectRef}
-                          defaultValue={topicsForCreation()[0].value}
-                          name="topic"
-                        >
-                          {topicsForCreation()?.map((x, i) => {
-                            return (
-                              <option key={"topic" + x.id} value={x.label}>
-                                {x.value}
-                              </option>
-                            );
-                          })}
-
-                          <option value=""></option>
-                        </select>
-
-                        <label htmlFor="photo">Photo</label>
-                        <input
-                          onChange={(e) => {
-                            if (e.target.files?.length) {
-                              setImage(e.target.files[0]);
-                            }
-                          }}
-                          ref={fileInputRef}
-                          type="file"
-                          name="image"
-                          accept="image/*"
-                        />
-
-                        <label htmlFor="content">Photo</label>
-                        <textarea
-                          onChange={(e) => {
-                            setInputs(e);
-                          }}
-                          name="content"
-                          value={postInputs.content}
-                          style={{ resize: "none" }}
-                        ></textarea>
-
-                        <button
-                          style={{ color: `${loading ? "gray" : "black"}` }}
-                          disabled={loading}
-                          type="submit"
-                        >
-                          {loading ? "laoding..." : "Add post"}
-                        </button>
-                      </form>
-
-                      {error.message !== "" && (
-                        <span
-                          style={{ color: `${error.err ? "red" : "green"}` }}
-                        >
-                          {error.message}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </>
+                <AddPostForm postFormActive={postFormActive} />
               )}
 
               {/* ADD POSTS END ADD POSTS END ADD POSTS END ADD POSTS END  */}
@@ -327,16 +249,16 @@ const Posts = (props: Props) => {
 
               <div className={styles.posts__grid}>
                 <div className={styles.right}>
-                  {posts.map((x, i) => {
+                  {posts.length ? posts.map((x, i) => {
                     return <Card key={"post" + x.id} post={x} />;
-                  })}
+                  }) : (<span>No posts to display(((</span>)}
                 </div>
                 <div className={styles.left}></div>
               </div>
 
               <div className={styles.posts__pagination}>
                 {pages?.map((page, i) => {
-                  return <button className={styles.pageButton}>{i + 1}</button>;
+                  return <button key={'pages_btn' + i} className={styles.pageButton}>{i + 1}</button>
                 })}
               </div>
             </div>

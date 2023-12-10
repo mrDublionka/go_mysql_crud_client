@@ -4,7 +4,7 @@ import {getAuthToken, setAuthToken, deleteAuthToken} from '../utils/cookies'
 import fetchDatas from './interceptors';
 
 
-let endpoint:string = process.env.NODE_ENV !== 'production' ? 'http://localhost/next-php-blog/server/controllers/' : '';
+let endpoint = process.env.NEXT_PUBLIC_API
 
 const toogleFetch = (url:string, params:any) => {
     return fetchDatas(url, params)
@@ -55,19 +55,19 @@ export const signUpService  = async (user:string, email:string, pass:string, ima
     }
 
     const userData = image? {
-        userName: user,
-        userEmail: email,
-        userPwd: pass,
+        user_name: user,
+        user_email: email,
+        user_pwd: pass,
         image: image
     } : {
-        userName: user,
-        userEmail: email,
-        userPwd: pass,
+        user_name: user,
+        user_email: email,
+        user_pwd: pass,
     }
 
     try {
         // console.log(userData)
-        const req = await fetch(endpoint + 'auth.php', {
+        const req = await fetch(endpoint + '/user/signin', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -78,10 +78,10 @@ export const signUpService  = async (user:string, email:string, pass:string, ima
 
         const body = await req.json()
 
-        if (body.user.userName.length) {
+        if (body.user_name.length) {
             response.error = false;
-            response.message = body.message
-            response.response = body.user
+            response.message = "ok"
+            response.response = body
         }
 
 
@@ -90,7 +90,7 @@ export const signUpService  = async (user:string, email:string, pass:string, ima
     } catch(error) {
         response.error = true;
         response.message = 'unknown error'
-
+        console.error(error)
         return response
     }
 
@@ -110,11 +110,11 @@ export const logInService = async (email: string, pwd: string): Promise<ServiceR
 
     try {
         const user = {
-            userEmail: email,
-            userPwd: pwd
+            user_email: email,
+            user_pwd: pwd
         }
 
-        const req = await fetch( endpoint + 'loginUser.php', {
+        const req = await fetch( endpoint + '/user/login', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -124,9 +124,9 @@ export const logInService = async (email: string, pwd: string): Promise<ServiceR
 
         const body = await req.json()
 
-        if(body.hasOwnProperty('user')) {
+        if(body.hasOwnProperty('token')) {
             response.message = 'Success';
-            response.response = body.user;
+            response.response = body.token;
             response.error = false
         } else {
             response.error = true;
@@ -159,16 +159,19 @@ export const fetchProfile = async (): Promise<ServiceResponse> => {
     }
 
     try {
-
-        const request = await fetch(endpoint + 'getUser.php', {
-                method: 'post',
-                body: JSON.stringify({token: token})
-            });
+        const request = await fetch(endpoint + '/user/profile', {
+            method: 'post',
+            headers: {
+                "Authorization": token
+            }
+        });
 
         const body = await request.json()
 
-        if(body.message){
-            response.response = body.user
+
+        if(body.hasOwnProperty("ID")){
+            response.response = body
+            response.message = "Success"
         }
 
         return response
